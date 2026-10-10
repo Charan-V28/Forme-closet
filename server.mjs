@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +12,10 @@ const browserAssets = new Map([
   ['/vendor/ort-wasm-simd-threaded.mjs', path.join(appDir, 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.mjs')],
   ['/vendor/ort-wasm-simd-threaded.wasm', path.join(appDir, 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.wasm')],
 ]);
+const commonRuntimeDir = path.join(appDir, 'node_modules', 'onnxruntime-web', 'node_modules', 'onnxruntime-common', 'dist', 'esm');
+for (const name of await readdir(commonRuntimeDir)) {
+  if (name.endsWith('.js')) browserAssets.set(`/vendor/onnxruntime-common/${name}`, path.join(commonRuntimeDir, name));
+}
 try {
   const envText = await readFile(path.join(appDir, '.env'), 'utf8');
   for (const line of envText.split(/\r?\n/)) {
