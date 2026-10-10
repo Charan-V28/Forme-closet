@@ -8,6 +8,7 @@ import path from 'node:path';
 const appDir = path.dirname(fileURLToPath(import.meta.url));
 const browserAssets = new Map([
   ['/vendor/transformers.js', path.join(appDir, 'node_modules', '@huggingface', 'transformers', 'dist', 'transformers.web.js')],
+  ['/vendor/onnxruntime-webgpu.mjs', path.join(appDir, 'node_modules', 'onnxruntime-web', 'dist', 'ort.webgpu.bundle.min.mjs')],
   ['/vendor/ort-wasm-simd-threaded.mjs', path.join(appDir, 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.mjs')],
   ['/vendor/ort-wasm-simd-threaded.wasm', path.join(appDir, 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.wasm')],
 ]);
