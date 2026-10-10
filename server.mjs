@@ -52,7 +52,8 @@ const server = http.createServer(async (req, res) => {
     } catch { return send(res, 500, { error: 'Supabase client is not installed. Run npm install.' }); }
   }
   if (req.method === 'GET' && req.url === '/api/status') {
-    return send(res, 200, { virtualTryOn: await isLocalModelReady(), mode: 'local-cpu', installed: existsSync(pyExe) && existsSync(modelScript) && existsSync(path.join(appDir, 'local-model', 'weights', 'model.safetensors')) });
+    const disabled = process.env.DISABLE_LOCAL_VTON === '1';
+    return send(res, 200, { virtualTryOn: !disabled && await isLocalModelReady(), mode: disabled ? 'disabled' : 'local-cpu', installed: !disabled && existsSync(pyExe) && existsSync(modelScript) && existsSync(path.join(appDir, 'local-model', 'weights', 'model.safetensors')) });
   }
   if (req.method === 'POST' && req.url === '/api/try-on') {
     try {

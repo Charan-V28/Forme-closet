@@ -1,6 +1,6 @@
 -- Forme web beta foundation for Supabase.
--- Run in a new Supabase project's SQL editor. This creates private per-user data
--- tables and buckets; it does not connect the current browser-local MVP yet.
+-- Run in the Supabase SQL Editor to create the private per-user tables,
+-- row-level security policies, and image buckets used by the web app.
 
 create extension if not exists pgcrypto;
 
