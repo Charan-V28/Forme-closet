@@ -107,4 +107,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 const port = Number(process.env.PORT || 4173);
-server.listen(port, '127.0.0.1', () => console.log(`Forme is ready at http://127.0.0.1:${port}`));
+const host = process.env.HOST || '127.0.0.1';
+server.listen(port, host, () => console.log(`Forme is ready at http://${host}:${port}`));
