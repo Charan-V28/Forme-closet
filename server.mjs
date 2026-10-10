@@ -6,6 +6,11 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
+const browserAssets = new Map([
+  ['/vendor/transformers.js', path.join(appDir, 'node_modules', '@huggingface', 'transformers', 'dist', 'transformers.web.js')],
+  ['/vendor/ort-wasm-simd-threaded.asyncify.mjs', path.join(appDir, 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.asyncify.mjs')],
+  ['/vendor/ort-wasm-simd-threaded.asyncify.wasm', path.join(appDir, 'node_modules', 'onnxruntime-web', 'dist', 'ort-wasm-simd-threaded.asyncify.wasm')]
+]);
 try {
   const envText = await readFile(path.join(appDir, '.env'), 'utf8');
   for (const line of envText.split(/\r?\n/)) {
@@ -43,6 +48,14 @@ const server = http.createServer(async (req, res) => {
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       supabasePublishableKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
     });
+  }
+  if (req.method === 'GET' && browserAssets.has(req.url)) {
+    try {
+      const file = await readFile(browserAssets.get(req.url));
+      const type = req.url.endsWith('.wasm') ? 'application/wasm' : 'text/javascript; charset=utf-8';
+      res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'public, max-age=3600', 'X-Content-Type-Options': 'nosniff' });
+      return res.end(file);
+    } catch { return send(res, 503, { error: 'The on-device image model is not installed. Run npm install and restart the app.' }); }
   }
   if (req.method === 'GET' && req.url === '/vendor/supabase.js') {
     try {
